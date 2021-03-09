@@ -12,7 +12,9 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
+    // CORS 설정시 '*' 와일드카드 사용불가
     registry.addEndpoint("/chart")
+        .setAllowedOriginPatterns("http://192.168.0**")
         .withSockJS();
   }
 

@@ -21,8 +21,6 @@
       client.subscribe('/subscribe/candle', function (candle) {
         let content = JSON.parse(candle.body);
         console.log(content);
-
-        // chatBox.append('<li>' + content.message + '(' + content.writer + ')</li>')
       });
     });
 
