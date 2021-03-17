@@ -4,20 +4,18 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
+import lombok.RequiredArgsConstructor;
 import my.demo.tradingview.model.ChartCandle;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+@RequiredArgsConstructor
 @Controller
 public class ChartController {
 
   private final SimpMessagingTemplate template;
-
-  public ChartController(SimpMessagingTemplate simpMessagingTemplate) {
-    this.template = simpMessagingTemplate;
-  }
 
   @GetMapping("/")
   public String index() {

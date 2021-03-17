@@ -18,7 +18,7 @@
 
     client.connect({}, function () {
       // client.send('/publish/chat/join', {}, JSON.stringify({chatRoomId: roomId, type: 'JOIN', writer: member}));
-      client.subscribe('/subscribe/candle', function (candle) {
+      client.subscribe('/subscribe/orders', function (candle) {
         let content = JSON.parse(candle.body);
         console.log(content);
       });

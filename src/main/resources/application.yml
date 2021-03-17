@@ -1,2 +1,5 @@
 # Pebble 탬플릿엔진 설정
 pebble.suffix: .peb
+
+server:
+  port: 8081
