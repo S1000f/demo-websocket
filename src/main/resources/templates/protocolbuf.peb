@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="/webjars/jquery/dist/jquery.min.js"></script>
+  <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+  <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+</head>
+<body>
+
+<script>
+  $(function () {
+
+    let ws = new WebSocket("ws://localhost:8081/protobuf");
+
+    ws.onopen = function () {
+      console.log("connecting");
+    }
+
+    ws.onmessage = function (message) {
+      console.log(message.data);
+    }
+
+    // let sock = new SockJS("/protobuf");
+    //
+    // sock.onopen = function () {
+    //   console.log("connected");
+    //
+    //   sock.onmessage = function (e) {
+    //     console.log(e.data);
+    //   };
+    // };
+
+  });
+</script>
+</body>
+</html>

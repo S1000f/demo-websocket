@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package demo;
+
+option java_package = "my.demo.tradingview.message";
+option java_outer_classname = "CandleProto";
+
+message Candle {
+  optional string time = 1;
+  optional string open = 2;
+  optional string high = 3;
+  optional string low = 4;
+  optional string close = 5;
+}
