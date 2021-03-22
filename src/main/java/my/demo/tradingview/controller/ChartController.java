@@ -57,7 +57,7 @@ public class ChartController {
         .close(BigDecimal.valueOf(randomClose))
         .build();
 
-    template.convertAndSend("/subscribe/candle", chartCandle);
+    template.convertAndSend("/bin", chartCandle);
   }
 
   @Scheduled(initialDelay = 500, fixedRate = 200)

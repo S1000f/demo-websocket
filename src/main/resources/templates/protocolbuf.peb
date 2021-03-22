@@ -8,29 +8,40 @@
   <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 </head>
 <body>
-
+  <button id="connect" type="button">connect</button>
+  <br />
+  <button id="send" type="button">send</button>
 <script>
-  $(function () {
-
-    let ws = new WebSocket("ws://localhost:8081/protobuf");
+  let ws;
+  function connect() {
+    ws = new WebSocket('ws://localhost:8080/bin2');
 
     ws.onopen = function () {
-      console.log("connecting");
-    }
+      console.log("connected");
+    };
 
-    ws.onmessage = function (message) {
-      console.log(message.data);
-    }
+    ws.onmessage = function (data) {
+      console.log(data.data);
+    };
+  }
 
-    // let sock = new SockJS("/protobuf");
-    //
-    // sock.onopen = function () {
-    //   console.log("connected");
-    //
-    //   sock.onmessage = function (e) {
-    //     console.log(e.data);
-    //   };
-    // };
+  function send() {
+    let token = "12341234";
+    let buffer = new ArrayBuffer(16);
+
+
+
+    ws.send()
+  }
+
+  $(function () {
+    $("#connect").click(function() {
+      connect();
+    });
+
+    $("#send").click(function() {
+      send();
+    });
 
   });
 </script>
