@@ -14,7 +14,7 @@
 <script>
   let ws;
   function connect() {
-    ws = new WebSocket('ws://localhost:8080/bin2');
+    ws = new WebSocket('ws://localhost:8080/bin');
 
     ws.onopen = function () {
       console.log("connected");
@@ -26,12 +26,11 @@
   }
 
   function send() {
-    let token = "12341234";
-    let buffer = new ArrayBuffer(16);
+    let token = "token:12345";
+    let uint8array = new TextEncoder("utf-8").encode(token);
+    console.log(uint8array);
 
-
-
-    ws.send()
+    ws.send(uint8array);
   }
 
   $(function () {

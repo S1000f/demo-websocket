@@ -14,11 +14,11 @@ public class MessageConfig {
 
   @Bean
   public MappingJackson2MessageConverter messageConverter() {
-    MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
-    messageConverter.setTypeIdPropertyName("typeId");
-
     Map<String, Class<?>> typeIdMapping = new HashMap<>();
     typeIdMapping.put("order", OrderRequestDto.class);
+
+    MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
+    messageConverter.setTypeIdPropertyName("typeId");
     messageConverter.setTypeIdMappings(typeIdMapping);
 
     return messageConverter;

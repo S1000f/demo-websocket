@@ -1,15 +1,12 @@
 package my.demo.tradingview.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import my.demo.tradingview.model.OrderRequestDto;
-import org.springframework.jms.annotation.JmsListener;
+import my.demo.tradingview.lib.SecurityUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
@@ -20,30 +17,38 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 @Component
 public class SocketBinaryHandler extends BinaryWebSocketHandler {
 
-  private final ObjectMapper mapper = new ObjectMapper();
-  private final List<WebSocketSession> socketSessions = new ArrayList<>();
-  private final Map<WebSocketSession, String> socketSessionMap = new HashMap<>();
+  private final Set<WebSocketSession> broadcast = new HashSet<>();
+  private final Map<String, WebSocketSession> sessionMap = new HashMap<>();
+  private final Map<String, String> tokenSessionIdMap = new HashMap<>();
+
+  public void broadcast(BinaryMessage message) {
+    broadcast.forEach(session -> handleBinaryMessage(session, message));
+  }
+
+  public boolean sendToUser(String token, BinaryMessage message) {
+    String sessionId = tokenSessionIdMap.get(token);
+    if (sessionId != null && !sessionId.isEmpty()) {
+      handleBinaryMessage(sessionMap.get(sessionId), message);
+      return true;
+    }
+
+    return false;
+  }
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) {
-    socketSessions.add(session);
-  }
-
-  @JmsListener(destination = "exchange.orders")
-  public void queueOrders(OrderRequestDto ordersRequestDto) throws Exception {
-    log.info("queued :" + ordersRequestDto);
-
-    BinaryMessage message = new BinaryMessage(mapper.writeValueAsBytes(ordersRequestDto));
-    socketSessions.forEach(session -> handleBinaryMessage(session, message));
+    broadcast.add(session);
+    sessionMap.put(session.getId(), session);
   }
 
   @Override
   protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
-    if (!socketSessionMap.containsKey(session) && message.getPayloadLength() == 8) {
-      log.info("input data is 8 bytes");
-      String token = StandardCharsets.UTF_8.decode(message.getPayload()).toString();
-      socketSessionMap.put(session, token);
-
+    if (SecurityUtils.hasToken(message)) {
+      String token = SecurityUtils.extractToken(message);
+      if (token != null) {
+        tokenSessionIdMap.put(token, session.getId());
+        return;
+      }
     }
 
     try {
@@ -60,7 +65,12 @@ public class SocketBinaryHandler extends BinaryWebSocketHandler {
 
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-    socketSessions.remove(session);
+    String sessionId = session.getId();
+
+    broadcast.remove(session);
+    sessionMap.remove(sessionId);
+    tokenSessionIdMap.values()
+        .remove(sessionId);
   }
 
 }
