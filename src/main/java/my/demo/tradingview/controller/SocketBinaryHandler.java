@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import my.demo.tradingview.lib.SecurityUtils;
+import my.demo.tradingview.service.OrderService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
@@ -14,12 +16,14 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class SocketBinaryHandler extends BinaryWebSocketHandler {
 
   private final Set<WebSocketSession> broadcast = new HashSet<>();
   private final Map<String, WebSocketSession> sessionMap = new HashMap<>();
   private final Map<String, String> tokenSessionIdMap = new HashMap<>();
+  private final OrderService orderService;
 
   public void broadcast(BinaryMessage message) {
     broadcast.forEach(session -> handleBinaryMessage(session, message));
@@ -37,6 +41,9 @@ public class SocketBinaryHandler extends BinaryWebSocketHandler {
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) {
+    orderService.getBinMessageList()
+        .forEach(m -> handleBinaryMessage(session, m));
+
     broadcast.add(session);
     sessionMap.put(session.getId(), session);
   }

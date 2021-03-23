@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import my.demo.tradingview.controller.SocketBinaryHandler;
 import my.demo.tradingview.model.OrderRequestDto;
+import my.demo.tradingview.service.OrderService;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
@@ -16,11 +17,17 @@ import org.springframework.web.socket.BinaryMessage;
 public class OrderMessageListener {
 
   private final ObjectMapper mapper = new ObjectMapper();
+  private final OrderService orderService;
   private final SocketBinaryHandler binaryHandler;
 
   @JmsListener(destination = "exchange.orders")
   public void queueOrders(OrderRequestDto ordersRequestDto) {
     log.info("queued :" + ordersRequestDto);
+
+    boolean save = orderService.save(ordersRequestDto);
+    if (!save) {
+      return;
+    }
 
     BinaryMessage message;
     try {

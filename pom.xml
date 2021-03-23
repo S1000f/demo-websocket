@@ -34,6 +34,16 @@
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.65</version>
+    </dependency>
+    <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
       <version>3.15.0-rc-2</version>
@@ -43,7 +53,6 @@
       <artifactId>javax.websocket-api</artifactId>
       <version>1.1</version>
     </dependency>
-
     <dependency>
       <groupId>io.pebbletemplates</groupId>
       <artifactId>pebble-spring-boot-starter</artifactId>

@@ -3,25 +3,34 @@ package my.demo.tradingview.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
-import my.demo.tradingview.message.CandleProto;
-import my.demo.tradingview.message.CandleProto.Candle;
+import lombok.extern.slf4j.Slf4j;
+import my.demo.tradingview.message.protocol.CandleProto;
+import my.demo.tradingview.message.protocol.CandleProto.Candle;
 import my.demo.tradingview.model.ChartCandle;
+import my.demo.tradingview.model.TestMessageDto;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.socket.BinaryMessage;
 
+@Slf4j
 @RequiredArgsConstructor
 @Controller
 public class ChartController {
 
   private final SimpMessagingTemplate template;
+  private final SocketBinaryHandler socketBinaryHandler;
 
   @GetMapping("/")
   public String index() {
@@ -41,6 +50,13 @@ public class ChartController {
   @GetMapping("/base64")
   public String base64() {
     return "base64";
+  }
+
+  @ResponseBody
+  @PostMapping("/send")
+  public void sendMessageToUser(@RequestBody TestMessageDto messageDto) {
+    socketBinaryHandler.sendToUser(messageDto.getTargetToken(),
+        new BinaryMessage(messageDto.getMessage().getBytes(StandardCharsets.UTF_8)));
   }
 
   @Scheduled(initialDelay = 500, fixedRate = 200)
@@ -88,12 +104,12 @@ public class ChartController {
     int randomClose = random.nextInt(randomOpen + 10) + 1;
 
     CandleProto.Candle candle = Candle.newBuilder()
-      .setTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-      .setOpen(String.valueOf(randomOpen))
-      .setHigh(String.valueOf(19.45))
-      .setLow(String.valueOf(14.33))
-      .setClose(String.valueOf(randomClose))
-      .build();
+        .setTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+        .setOpen(String.valueOf(randomOpen))
+        .setHigh(String.valueOf(19.45))
+        .setLow(String.valueOf(14.33))
+        .setClose(String.valueOf(randomClose))
+        .build();
 
     template.convertAndSend("/subscribe/protobuf", candle.toByteString());
   }

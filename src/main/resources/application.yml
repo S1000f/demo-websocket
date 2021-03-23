@@ -1,2 +1,8 @@
 # Pebble 탬플릿엔진 설정
 pebble.suffix: .peb
+
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 1000ms

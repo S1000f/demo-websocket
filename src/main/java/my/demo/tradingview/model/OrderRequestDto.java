@@ -1,10 +1,16 @@
 package my.demo.tradingview.model;
 
 import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class OrderRequestDto {
 
@@ -13,4 +19,6 @@ public class OrderRequestDto {
   private BigDecimal price;
   private BigDecimal amount;
   private String orderType;
+  private Long userIdx;
+  private Long date;
 }
