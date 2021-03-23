@@ -8,38 +8,86 @@
   <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 </head>
 <body>
-  <button id="connect" type="button">connect</button>
-  <br />
-  <button id="send" type="button">send</button>
+  <div class="panel">
+    <button id="connect" type="button">connect</button>&nbsp;
+    <button id="disconnect" type="button">disconnect</button>
+    <br />
+    <label for="token"></label>
+    <input type="text" id="token" placeholder="your temp token"/>&nbsp;
+    <button id="send" type="button">send</button>
+    <hr />
+  </div>
+  <div class="row">
+    <div class="col-12 px-0">
+      <span id="pair"><strong>BTC-KRW</strong></span>
+      <table class="table table-hover">
+        <thead>
+        <tr class="d-none d-md-table-hover">
+          <th class="th-100">price</th>
+          <th class="th-100">amount</th>
+          <th class="th-50">match</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="th-100">65000000</td>
+          <td class="th-100">0.03</td>
+          <td class="th-50">0</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 <script>
-  let ws;
-  function connect() {
-    ws = new WebSocket('ws://localhost:8080/bin');
+  jQuery(document).ready(function ($) {
+    let ws;
 
-    ws.onopen = function () {
-      console.log("connected");
-    };
+    function setConnected(connected) {
+      $("#connect").prop("disabled", connected);
+      $("#disconnect").prop("disabled", !connected);
+    }
 
-    ws.onmessage = function (data) {
-      console.log(data.data);
-    };
-  }
+    function connect() {
+      ws = new WebSocket('ws://localhost:8080/bin');
 
-  function send() {
-    let token = "token:12345";
-    let uint8array = new TextEncoder("utf-8").encode(token);
-    console.log(uint8array);
+      ws.onopen = function () {
+        console.log("connected...");
+        setConnected(true);
+      };
 
-    ws.send(uint8array);
-  }
+      ws.onmessage = function (data) {
+        console.log(data.data);
+      };
+    }
 
-  $(function () {
+    function send() {
+      let prefix = "token:";
+      let token = $("#token").val();
+
+      let uint8array = new TextEncoder("utf-8").encode(prefix + token);
+
+      ws.send(uint8array);
+    }
+
+    function disconnect() {
+      if (ws != null) {
+        ws.close();
+      }
+      setConnected(false);
+      console.log("disconnected...");
+    }
+
     $("#connect").click(function() {
       connect();
     });
 
     $("#send").click(function() {
       send();
+    });
+
+    $("#disconnect").click(function() {
+      disconnect();
     });
 
   });
