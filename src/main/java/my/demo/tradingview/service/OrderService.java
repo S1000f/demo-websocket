@@ -49,9 +49,6 @@ public class OrderService {
   }
 
   public List<BinaryMessage> getBinMessageList() {
-
-    log.info("orderService findlist enter");
-
     return redisRepository.findAll()
         .stream()
         .map(o -> {

@@ -54,9 +54,6 @@ public class OrderRedisRepository {
   }
 
   public List<OrderRequestDto> findAll() {
-
-    log.info("redisRepo findAll enter...");
-
     Set<String> keys = redisTemplate.keys("token*");
 
     if (keys == null || keys.isEmpty()) {
@@ -69,8 +66,6 @@ public class OrderRedisRepository {
     if (strings == null || strings.isEmpty()) {
       return Collections.emptyList();
     }
-
-    log.info("redis repo find message list: " + strings);
 
     return strings.stream()
         .map(s -> {
