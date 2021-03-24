@@ -3,6 +3,7 @@ package my.demo.tradingview.controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,11 @@ public class SocketBinaryHandler extends BinaryWebSocketHandler {
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) {
+
+    log.info("websocket connected");
+    List<BinaryMessage> binMessageList = orderService.getBinMessageList();
+    log.info("message list :" + binMessageList);
+
     orderService.getBinMessageList()
         .forEach(m -> handleBinaryMessage(session, m));
 

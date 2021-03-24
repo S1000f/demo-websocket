@@ -15,8 +15,8 @@
     <span id="connect-message" style="color: tomato; font-weight: bold"></span>
     <br />
     <label for="token"></label>
-    <input type="text" id="token" placeholder="your temp token"/>&nbsp;
-    <button id="send" type="button">send</button>
+    <input type="text" id="token" readonly/>&nbsp;
+    <span id="send" style="font-weight: bold"></span>
     <br />
     <button id="clear" type="button">clear queue</button>&nbsp;
     <span id="clear-message" style="color: tomato; font-weight: bold"></span>

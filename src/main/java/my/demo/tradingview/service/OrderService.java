@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import my.demo.tradingview.lib.SecurityUtils;
 import my.demo.tradingview.model.OrderRequestDto;
 import my.demo.tradingview.repository.OrderRedisRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.BinaryMessage;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class OrderService {
@@ -47,6 +49,9 @@ public class OrderService {
   }
 
   public List<BinaryMessage> getBinMessageList() {
+
+    log.info("orderService findlist enter");
+
     return redisRepository.findAll()
         .stream()
         .map(o -> {

@@ -19,6 +19,6 @@ public class OrderRequestDto {
   private BigDecimal price;
   private BigDecimal amount;
   private String orderType;
-  private Long userIdx;
+  private String userIdx;
   private Long date;
 }
