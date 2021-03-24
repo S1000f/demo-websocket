@@ -1,5 +1,9 @@
 package my.demo.tradingview.lib;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
@@ -9,6 +13,8 @@ import org.springframework.web.socket.BinaryMessage;
 
 @Slf4j
 public final class SecurityUtils {
+
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   private SecurityUtils() {
   }
@@ -58,6 +64,10 @@ public final class SecurityUtils {
   public static String getSha3bit256(String utf8) {
     byte[] target = utf8.getBytes(StandardCharsets.UTF_8);
     return Hex.toHexString(getSha3bit256(target));
+  }
+
+  public static <T> String buildRedisKey(T requestDto) throws JsonProcessingException {
+    return getSha3bit256(mapper.writeValueAsString(requestDto));
   }
 
 }

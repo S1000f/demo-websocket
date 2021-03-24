@@ -38,14 +38,19 @@ public class OrderRedisRepository {
     return true;
   }
 
-  public Long deleteAll() {
+  public Boolean delete(String redisKey) {
+    return redisTemplate.delete("token:" + redisKey);
+  }
+
+  public boolean deleteAll() {
     Set<String> keys = redisTemplate.keys("token*");
 
     if (keys == null || keys.isEmpty()) {
-      return null;
+      return false;
     }
+    redisTemplate.delete(keys);
 
-    return redisTemplate.delete(keys);
+    return true;
   }
 
   public List<OrderRequestDto> findAll() {

@@ -54,8 +54,8 @@ public class ChartController {
 
   @ResponseBody
   @PostMapping("/send")
-  public void sendMessageToUser(@RequestBody TestMessageDto messageDto) {
-    socketBinaryHandler.sendToUser(messageDto.getTargetToken(),
+  public boolean sendMessageToUser(@RequestBody TestMessageDto messageDto) {
+    return socketBinaryHandler.sendToUser(messageDto.getTargetToken(),
         new BinaryMessage(messageDto.getMessage().getBytes(StandardCharsets.UTF_8)));
   }
 

@@ -6,15 +6,30 @@
   <script src="/webjars/jquery/dist/jquery.min.js"></script>
   <script src="/webjars/sockjs-client/sockjs.min.js"></script>
   <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+  <script src="/protocolbuf.js"></script>
 </head>
 <body>
   <div class="panel">
     <button id="connect" type="button">connect</button>&nbsp;
-    <button id="disconnect" type="button">disconnect</button>
+    <button id="disconnect" type="button">disconnect</button>&nbsp;
+    <span id="connect-message" style="color: tomato; font-weight: bold"></span>
     <br />
     <label for="token"></label>
     <input type="text" id="token" placeholder="your temp token"/>&nbsp;
     <button id="send" type="button">send</button>
+    <br />
+    <button id="clear" type="button">clear queue</button>&nbsp;
+    <span id="clear-message" style="color: tomato; font-weight: bold"></span>
+    <hr />
+    <input type="number" id="input-price" placeholder="price(primary)"/>&nbsp;
+    <input type="number" id="input-amount" placeholder="amount"/>
+    <br />
+    <label for="input-type-buy">buy</label>
+    <input type="radio" id="input-type-buy" name="input-type" value="true" checked/>
+    <label for="input-type-sell">sell</label>
+    <input type="radio" id="input-type-sell" name="input-type" value="false"/>
+    <br />
+    <button type="button" id="order">place the order</button>
     <hr />
   </div>
   <div class="row">
@@ -22,75 +37,18 @@
       <span id="pair"><strong>BTC-KRW</strong></span>
       <table class="table table-hover">
         <thead>
-        <tr class="d-none d-md-table-hover">
-          <th class="th-100">price</th>
-          <th class="th-100">amount</th>
-          <th class="th-50">match</th>
-        </tr>
+          <tr class="d-none d-md-table-hover">
+            <th class="th-100">price</th>
+            <th class="th-100">amount</th>
+            <th class="th-50">deal</th>
+          </tr>
         </thead>
-        <tbody>
-        <tr>
-          <td class="th-100">65000000</td>
-          <td class="th-100">0.03</td>
-          <td class="th-50">0</td>
-        </tr>
+        <tbody id="table-sell">
+        </tbody>
+        <tbody id="table-buy">
         </tbody>
       </table>
     </div>
   </div>
-
-<script>
-  jQuery(document).ready(function ($) {
-    let ws;
-
-    function setConnected(connected) {
-      $("#connect").prop("disabled", connected);
-      $("#disconnect").prop("disabled", !connected);
-    }
-
-    function connect() {
-      ws = new WebSocket('ws://localhost:8080/bin');
-
-      ws.onopen = function () {
-        console.log("connected...");
-        setConnected(true);
-      };
-
-      ws.onmessage = function (data) {
-        console.log(data.data);
-      };
-    }
-
-    function send() {
-      let prefix = "token:";
-      let token = $("#token").val();
-
-      let uint8array = new TextEncoder("utf-8").encode(prefix + token);
-
-      ws.send(uint8array);
-    }
-
-    function disconnect() {
-      if (ws != null) {
-        ws.close();
-      }
-      setConnected(false);
-      console.log("disconnected...");
-    }
-
-    $("#connect").click(function() {
-      connect();
-    });
-
-    $("#send").click(function() {
-      send();
-    });
-
-    $("#disconnect").click(function() {
-      disconnect();
-    });
-
-  });
-</script>
 </body>
 </html>

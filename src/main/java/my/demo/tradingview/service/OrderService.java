@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import my.demo.tradingview.lib.SecurityUtils;
 import my.demo.tradingview.model.OrderRequestDto;
 import my.demo.tradingview.repository.OrderRedisRepository;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,23 @@ public class OrderService {
     return redisRepository.save(requestDto);
   }
 
-  public Long deleteAll() {
+  public Boolean delete(OrderRequestDto orderRequestDto) {
+    if (orderRequestDto == null) {
+      return false;
+    }
+
+    String redisKey;
+    try {
+      redisKey = SecurityUtils.buildRedisKey(orderRequestDto);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return false;
+    }
+
+    return redisRepository.delete(redisKey);
+  }
+
+  public boolean deleteAll() {
     return redisRepository.deleteAll();
   }
 
