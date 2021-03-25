@@ -1,6 +1,11 @@
-package my.demo.tradingview.controller;
+package my.demo.tradingview.config.websocket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,6 +25,7 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 @Component
 public class SocketBinaryHandler extends BinaryWebSocketHandler {
 
+  private final ObjectMapper mapper = new ObjectMapper();
   private final Set<WebSocketSession> broadcast = new HashSet<>();
   private final Map<String, WebSocketSession> sessionMap = new HashMap<>();
   private final Map<String, String> tokenSessionIdMap = new HashMap<>();
@@ -27,6 +33,22 @@ public class SocketBinaryHandler extends BinaryWebSocketHandler {
 
   public void broadcast(BinaryMessage message) {
     broadcast.forEach(session -> handleBinaryMessage(session, message));
+  }
+
+  public <T> boolean broadcast(T message) {
+    String stringed;
+    try {
+      stringed = mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+          .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+          .writeValueAsString(message);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return false;
+    }
+
+    broadcast(new BinaryMessage(stringed.getBytes(StandardCharsets.UTF_8)));
+
+    return true;
   }
 
   public boolean sendToUser(String token, BinaryMessage message) {

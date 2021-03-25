@@ -1,7 +1,6 @@
-package my.demo.tradingview.config;
+package my.demo.tradingview.config.websocket;
 
 import lombok.RequiredArgsConstructor;
-import my.demo.tradingview.controller.SocketBinaryHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;

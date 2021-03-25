@@ -4,17 +4,6 @@ jQuery(document).ready(function ($) {
   let token;
   let orderBooks = [];
 
-  class Order {
-    constructor(_marketPair, _isBuy, _price, _amount, _orderType, _userIdx) {
-      this.marketPair = _marketPair;
-      this.isBuy = _isBuy ? true : false;
-      this.price = _price;
-      this.amount = _amount;
-      this.orderType = _orderType;
-      this.userIdx = _userIdx;
-    }
-  }
-
   function setConnected() {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);

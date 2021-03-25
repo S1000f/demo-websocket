@@ -11,6 +11,7 @@ import java.util.Base64;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import my.demo.tradingview.config.websocket.SocketBinaryHandler;
 import my.demo.tradingview.message.protocol.CandleProto;
 import my.demo.tradingview.message.protocol.CandleProto.Candle;
 import my.demo.tradingview.model.ChartCandle;

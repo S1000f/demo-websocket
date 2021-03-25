@@ -21,4 +21,8 @@ public class OrderRequestDto {
   private String orderType;
   private String userIdx;
   private Long date;
+
+  public void setClose() {
+    this.orderType = "CLOSE";
+  }
 }
