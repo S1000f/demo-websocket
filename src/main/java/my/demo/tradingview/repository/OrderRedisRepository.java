@@ -8,15 +8,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import my.demo.tradingview.config.websocket.InitMessagesProvider;
 import my.demo.tradingview.lib.SecurityUtils;
 import my.demo.tradingview.model.OrderRequestDto;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.socket.BinaryMessage;
 
 @Slf4j
 @RequiredArgsConstructor
 @Repository
-public class OrderRedisRepository implements CacheRepository<OrderRequestDto> {
+public class OrderRedisRepository implements CacheRepository<OrderRequestDto>, InitMessagesProvider {
 
   private final RedisTemplate<String, String> redisTemplate;
   private final ObjectMapper mapper = new ObjectMapper();
@@ -97,4 +99,19 @@ public class OrderRedisRepository implements CacheRepository<OrderRequestDto> {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public List<BinaryMessage> getInitialMessageList() {
+    return findAll()
+        .stream()
+        .map(o -> {
+          try {
+            return mapper.writeValueAsBytes(o);
+          } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new byte[0];
+          }
+        })
+        .map(BinaryMessage::new)
+        .collect(Collectors.toList());
+  }
 }
