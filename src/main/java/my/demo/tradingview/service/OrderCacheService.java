@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import my.demo.tradingview.config.websocket.InitMessagesProvider;
+import my.demo.tradingview.model.CacheableMessage;
 import my.demo.tradingview.model.OrderRequestDto;
 import my.demo.tradingview.repository.OrderRedisRepository;
 import org.springframework.stereotype.Service;
@@ -14,12 +16,12 @@ import org.springframework.web.socket.BinaryMessage;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class OrderService {
+public class OrderCacheService implements InitMessagesProvider {
 
   private final ObjectMapper mapper = new ObjectMapper();
   private final OrderRedisRepository redisRepository;
 
-  public boolean save(OrderRequestDto requestDto) {
+  public <T extends CacheableMessage> boolean save(T requestDto) {
     return redisRepository.save(requestDto);
   }
 
@@ -35,7 +37,8 @@ public class OrderService {
     return redisRepository.findAll();
   }
 
-  public List<BinaryMessage> getBinMessageList() {
+  @Override
+  public List<BinaryMessage> getInitialMessageList() {
     return redisRepository.findAll()
         .stream()
         .map(o -> {

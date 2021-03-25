@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderRequestDto {
+public class OrderRequestDto implements CacheableMessage {
 
   private String marketPair;
   private Boolean isBuy;

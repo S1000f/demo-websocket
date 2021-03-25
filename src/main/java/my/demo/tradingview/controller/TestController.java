@@ -1,23 +1,32 @@
 package my.demo.tradingview.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import my.demo.tradingview.config.websocket.SocketBinaryHandler;
+import my.demo.tradingview.model.CacheableMessage;
 import my.demo.tradingview.model.OrderRequestDto;
-import my.demo.tradingview.service.OrderService;
+import my.demo.tradingview.service.OrderCacheService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.socket.BinaryMessage;
 
 @Slf4j
 @RequiredArgsConstructor
 @Controller
-public class TestController {
+public class TestController implements MessageController {
 
+  private final ObjectMapper mapper = new ObjectMapper();
   private final SocketBinaryHandler socketBinaryHandler;
-  private final OrderService orderService;
+  private final OrderCacheService orderCacheService;
 
   @GetMapping("/test")
   public String test() {
@@ -27,20 +36,41 @@ public class TestController {
   @ResponseBody
   @GetMapping("/clear")
   public boolean clearQueue() {
-    return orderService.deleteAll();
+    return orderCacheService.deleteAll();
   }
 
   @ResponseBody
   @PostMapping("/deal")
   public Boolean dealOrder(@RequestBody OrderRequestDto requestDto) {
-    Boolean delete = orderService.delete(requestDto);
+    Boolean delete = orderCacheService.delete(requestDto);
 
     if (!delete) {
       return false;
     }
 
     requestDto.setClose();
-    return socketBinaryHandler.broadcast(requestDto);
+    return broadcast(requestDto);
   }
 
+  @Override
+  public <T> boolean broadcast(T message) {
+    String stringed;
+    try {
+      stringed = mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+          .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+          .writeValueAsString(message);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return false;
+    }
+
+    socketBinaryHandler.broadcast(new BinaryMessage(stringed.getBytes(StandardCharsets.UTF_8)));
+
+    return true;
+  }
+
+  @Override
+  public <T extends CacheableMessage> boolean saveToCache(T message) {
+    return orderCacheService.save(message);
+  }
 }

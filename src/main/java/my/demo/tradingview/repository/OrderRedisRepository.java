@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import my.demo.tradingview.lib.SecurityUtils;
+import my.demo.tradingview.model.CacheableMessage;
 import my.demo.tradingview.model.OrderRequestDto;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -21,7 +22,7 @@ public class OrderRedisRepository {
   private final RedisTemplate<String, String> redisTemplate;
   private final ObjectMapper mapper = new ObjectMapper();
 
-  public boolean save(OrderRequestDto requestDto) {
+  public <T extends CacheableMessage> boolean save(T requestDto) {
     String stringed;
     try {
       stringed = mapper.writeValueAsString(requestDto);
