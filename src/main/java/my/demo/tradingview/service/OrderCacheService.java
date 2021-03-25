@@ -7,9 +7,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import my.demo.tradingview.config.websocket.InitMessagesProvider;
-import my.demo.tradingview.model.CacheableMessage;
 import my.demo.tradingview.model.OrderRequestDto;
-import my.demo.tradingview.repository.OrderRedisRepository;
+import my.demo.tradingview.repository.CacheRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.BinaryMessage;
 
@@ -19,13 +18,13 @@ import org.springframework.web.socket.BinaryMessage;
 public class OrderCacheService implements InitMessagesProvider {
 
   private final ObjectMapper mapper = new ObjectMapper();
-  private final OrderRedisRepository redisRepository;
+  private final CacheRepository<OrderRequestDto> redisRepository;
 
-  public <T extends CacheableMessage> boolean save(T requestDto) {
+  public boolean save(OrderRequestDto requestDto) {
     return redisRepository.save(requestDto);
   }
 
-  public Boolean delete(OrderRequestDto orderRequestDto) {
+  public boolean delete(OrderRequestDto orderRequestDto) {
     return redisRepository.delete(orderRequestDto);
   }
 

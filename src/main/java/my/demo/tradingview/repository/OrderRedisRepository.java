@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import my.demo.tradingview.lib.SecurityUtils;
-import my.demo.tradingview.model.CacheableMessage;
 import my.demo.tradingview.model.OrderRequestDto;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,12 +16,13 @@ import org.springframework.stereotype.Repository;
 @Slf4j
 @RequiredArgsConstructor
 @Repository
-public class OrderRedisRepository {
+public class OrderRedisRepository implements CacheRepository<OrderRequestDto> {
 
   private final RedisTemplate<String, String> redisTemplate;
   private final ObjectMapper mapper = new ObjectMapper();
 
-  public <T extends CacheableMessage> boolean save(T requestDto) {
+  @Override
+  public boolean save(OrderRequestDto requestDto) {
     String stringed;
     try {
       stringed = mapper.writeValueAsString(requestDto);
@@ -39,7 +39,8 @@ public class OrderRedisRepository {
     return true;
   }
 
-  public Boolean delete(OrderRequestDto requestDto) {
+  @Override
+  public boolean delete(OrderRequestDto requestDto) {
     if (requestDto == null) {
       return false;
     }
@@ -52,9 +53,12 @@ public class OrderRedisRepository {
       return false;
     }
 
-    return redisTemplate.delete("token:" + redisKey);
+    Boolean delete = redisTemplate.delete("token:" + redisKey);
+
+    return delete != null && delete;
   }
 
+  @Override
   public boolean deleteAll() {
     Set<String> keys = redisTemplate.keys("token*");
 
@@ -66,6 +70,7 @@ public class OrderRedisRepository {
     return true;
   }
 
+  @Override
   public List<OrderRequestDto> findAll() {
     Set<String> keys = redisTemplate.keys("token*");
 

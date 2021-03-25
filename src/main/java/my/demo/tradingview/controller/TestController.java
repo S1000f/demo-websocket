@@ -5,11 +5,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import my.demo.tradingview.config.websocket.SocketBinaryHandler;
-import my.demo.tradingview.model.CacheableMessage;
 import my.demo.tradingview.model.OrderRequestDto;
 import my.demo.tradingview.service.OrderCacheService;
 import org.springframework.stereotype.Controller;
@@ -41,8 +39,8 @@ public class TestController implements MessageController {
 
   @ResponseBody
   @PostMapping("/deal")
-  public Boolean dealOrder(@RequestBody OrderRequestDto requestDto) {
-    Boolean delete = orderCacheService.delete(requestDto);
+  public boolean dealOrder(@RequestBody OrderRequestDto requestDto) {
+    boolean delete = orderCacheService.delete(requestDto);
 
     if (!delete) {
       return false;
@@ -70,7 +68,8 @@ public class TestController implements MessageController {
   }
 
   @Override
-  public <T extends CacheableMessage> boolean saveToCache(T message) {
-    return orderCacheService.save(message);
+  public <T> boolean saveToCache(T message) {
+    OrderRequestDto message1 = (OrderRequestDto) message;
+    return orderCacheService.save(message1);
   }
 }
