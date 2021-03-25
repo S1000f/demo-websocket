@@ -10,4 +10,6 @@ public interface MessageRouter {
 
   boolean clearCache();
 
+  <T> void toEngine(T message);
+
 }

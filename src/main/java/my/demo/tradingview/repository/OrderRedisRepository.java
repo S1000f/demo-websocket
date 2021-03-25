@@ -33,10 +33,9 @@ public class OrderRedisRepository implements CacheRepository<OrderRequestDto>, I
       return false;
     }
 
-    String hashed = SecurityUtils.getSha3bit256(stringed);
-
+    String hashKey = SecurityUtils.buildRedisKey(stringed);
     redisTemplate.opsForValue()
-        .set("token:" + hashed, stringed);
+        .set("token:" + hashKey, stringed);
 
     return true;
   }

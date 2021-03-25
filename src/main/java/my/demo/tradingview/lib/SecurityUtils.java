@@ -70,4 +70,8 @@ public final class SecurityUtils {
     return getSha3bit256(mapper.writeValueAsString(requestDto));
   }
 
+  public static String buildRedisKey(String stringifiedUtf8) {
+    return getSha3bit256(stringifiedUtf8);
+  }
+
 }
