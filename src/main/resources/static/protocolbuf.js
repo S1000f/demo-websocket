@@ -2,13 +2,24 @@ jQuery(document).ready(function ($) {
   let ws;
   let connected = false;
   let token;
+  let orderBooks = [];
+
+  class Order {
+    constructor(_marketPair, _isBuy, _price, _amount, _orderType, _userIdx) {
+      this.marketPair = _marketPair;
+      this.isBuy = _isBuy ? true : false;
+      this.price = _price;
+      this.amount = _amount;
+      this.orderType = _orderType;
+      this.userIdx = _userIdx;
+    }
+  }
 
   function setConnected() {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
     $("#connect-message").html(connected ? "state: connected" : "state: disconnected");
   }
-
   setConnected();
 
   (function generateToken() {
@@ -28,25 +39,33 @@ jQuery(document).ready(function ($) {
     console.log("your token: " + userToken);
   })();
 
-  function render(_json) {
-    let orders = _json;
+  function render(_jsonString) {
+    let orders = JSON.parse(_jsonString);
     if (orders.orderType === "CLOSE") {
-      deal(orders);
+      close(orders);
       return true;
     }
+    orderBooks[orders.date] = orders;
 
     let table = orders.isBuy ? "buy" : "sell";
     let bgColor = orders.isBuy ? "tomato" : "dodgerblue";
     $(`#table-${table}`).append(`<tr style="background-color: ${bgColor}" class="price-${orders.price} 
-        idx-${orders.userIdx}"><td>${orders.price}</td><td>${orders.amount}</td>
-        <td><button type="button" class="deal" onclick="deal(${orders})">deal</button></td></tr>`);
+        idx-${orders.userIdx} date-${orders.date}"><td>${orders.price}</td><td>${orders.amount}</td>
+        <td><button type="button" class="deal" onclick="deal(${orders.date})">deal</button></td></tr>`);
   }
 
-  deal = function (_orders) {
+  function close(_orders) {
+    let target = _orders.date;
+    orderBooks.splice(orderBooks.indexOf(target), 1);
+
+    $(`.date-${target}`).remove();
+  }
+
+  deal = function (_param) {
     $.ajax({
       url: "/deal",
       type: "POST",
-      data: JSON.stringify(_orders),
+      data: JSON.stringify(orderBooks[_param]),
       contentType: "application/json",
       success: function (response) {
         console.log("deal: " + response);
@@ -69,7 +88,7 @@ jQuery(document).ready(function ($) {
     }
 
     $.ajax({
-      url: "http://localhost:8081/api/v1/orders/post",
+      url: "http://192.168.0.36:8081/api/v1/orders/post",
       type: "POST",
       data: JSON.stringify(request),
       contentType: "application/json",
@@ -93,7 +112,7 @@ jQuery(document).ready(function ($) {
   }
 
   function connect() {
-    ws = new WebSocket('ws://localhost:8080/bin');
+    ws = new WebSocket('ws://192.168.0.36:8080/bin');
 
     ws.onopen = function () {
       send();
@@ -106,12 +125,10 @@ jQuery(document).ready(function ($) {
       let fr = new FileReader();
 
       fr.onload = function () {
-        let parse = JSON.parse(this.result);
-        render(parse);
+        render(this.result);
       };
 
       fr.readAsText(data.data);
-
     };
   }
 

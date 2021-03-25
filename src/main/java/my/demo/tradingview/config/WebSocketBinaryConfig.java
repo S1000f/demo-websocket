@@ -17,6 +17,6 @@ public class WebSocketBinaryConfig implements WebSocketConfigurer {
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry.addHandler(socketBinaryHandler, "/bin")
-        .setAllowedOrigins("http://192.168.0.93:8080");
+        .setAllowedOrigins("http://192.168.0.93:8080", "http://192.168.0.36:8080");
   }
 }

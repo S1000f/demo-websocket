@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import my.demo.tradingview.lib.SecurityUtils;
 import my.demo.tradingview.model.OrderRequestDto;
 import my.demo.tradingview.repository.OrderRedisRepository;
 import org.springframework.stereotype.Service;
@@ -25,19 +24,7 @@ public class OrderService {
   }
 
   public Boolean delete(OrderRequestDto orderRequestDto) {
-    if (orderRequestDto == null) {
-      return false;
-    }
-
-    String redisKey;
-    try {
-      redisKey = SecurityUtils.buildRedisKey(orderRequestDto);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-      return false;
-    }
-
-    return redisRepository.delete(redisKey);
+    return redisRepository.delete(orderRequestDto);
   }
 
   public boolean deleteAll() {

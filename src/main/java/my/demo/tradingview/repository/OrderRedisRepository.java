@@ -38,7 +38,19 @@ public class OrderRedisRepository {
     return true;
   }
 
-  public Boolean delete(String redisKey) {
+  public Boolean delete(OrderRequestDto requestDto) {
+    if (requestDto == null) {
+      return false;
+    }
+
+    String redisKey;
+    try {
+      redisKey = SecurityUtils.buildRedisKey(requestDto);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return false;
+    }
+
     return redisTemplate.delete("token:" + redisKey);
   }
 
