@@ -18,7 +18,7 @@ import org.springframework.web.socket.BinaryMessage;
 @Slf4j
 @RequiredArgsConstructor
 @Repository
-public class OrderRedisRepository implements CacheRepository<OrderRequestDto>, InitMessagesProvider {
+public class OrderRedisRepository implements CacheRepository<OrderRequestDto, String>, InitMessagesProvider {
 
   private final RedisTemplate<String, String> redisTemplate;
   private final ObjectMapper mapper = new ObjectMapper();
@@ -96,6 +96,11 @@ public class OrderRedisRepository implements CacheRepository<OrderRequestDto>, I
           }
         })
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public OrderRequestDto find(String key) {
+    return null;
   }
 
   @Override

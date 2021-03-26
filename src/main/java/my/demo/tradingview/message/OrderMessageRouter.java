@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import my.demo.tradingview.config.websocket.SocketBinaryHandler;
-import my.demo.tradingview.engine.Engines;
 import my.demo.tradingview.model.OrderRequestDto;
 import my.demo.tradingview.repository.CacheRepository;
 import org.springframework.stereotype.Component;
@@ -21,8 +20,7 @@ public class OrderMessageRouter implements MessageRouter {
 
   private final ObjectMapper mapper = new ObjectMapper();
   private final SocketBinaryHandler socketBinaryHandler;
-  private final CacheRepository<OrderRequestDto> orderRedisRepository;
-  private final Engines<OrderRequestDto> tradingEngine;
+  private final CacheRepository<OrderRequestDto, String> orderRedisRepository;
 
   @Override
   public <T> boolean broadcast(T message) {
@@ -65,8 +63,4 @@ public class OrderMessageRouter implements MessageRouter {
     return orderRedisRepository.deleteAll();
   }
 
-  @Override
-  public <T> void toEngine(T message) {
-    tradingEngine.injectMessage((OrderRequestDto) message);
-  }
 }

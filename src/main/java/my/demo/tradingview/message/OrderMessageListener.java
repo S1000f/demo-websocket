@@ -15,7 +15,7 @@ public class OrderMessageListener {
 
   @JmsListener(destination = "exchange.orders")
   public void queueOrders(OrderRequestDto ordersRequestDto) {
-    log.info("queued :" + ordersRequestDto);
+    log.info("ws queued :" + ordersRequestDto);
 
     boolean result = messageRouter.saveToCache(ordersRequestDto);
     if (!result) {

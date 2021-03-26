@@ -2,7 +2,7 @@ package my.demo.tradingview.repository;
 
 import java.util.List;
 
-public interface CacheRepository<T> {
+public interface CacheRepository<T, K> {
 
   boolean save(T message);
 
@@ -11,4 +11,6 @@ public interface CacheRepository<T> {
   boolean deleteAll();
 
   List<T> findAll();
+
+  T find(K key);
 }
